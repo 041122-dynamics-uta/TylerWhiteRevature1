@@ -2,10 +2,10 @@
 
 #This script replicates a calculator that can add, subtract, multiply or divide
 
-echo -e "\nWelcome to my simple calculator."
+echo -e "\nWelcome to Tyler's simple calculator."
+echo -e "\nWould you like to:\n+ Add [PRESS 1]\n- Subtract [PRESS 2]\n* Multiply [PRESS 3]\n/ Divide [PRESS 4]"
 
 screen () {
-echo -e "\nWould you like to:\n+ Add [PRESS 1]\n- Subtract [PRESS 2]\n* Multiply [PRESS 3]\n/ Divide [PRESS 4]\n(or exit the program [PRESS x])"
 read input    
 if [ $input == "1" ] || [ $input == "2" ] || [ $input == "3" ] || [ $input == "4" ]
 then
@@ -15,41 +15,51 @@ then
     read num2
     
     add () {
-        output1=$(( num1 + num2 ))
+        ans=$(( num1 + num2 ))
     }
 
     subtract () {
-        echo The answer is $(( num1 - num2 )).
+        ans=$(( num1 - num2 ))
     }
 
     multiply () {
-        echo The answer is $(( num1 * num2 )).
+        ans=$(( num1 * num2 ))
     }
 
     divide () {
-        echo The answer is $(( num1 / num2 )).
+        if [ $num2 == "0" ]
+        then
+            echo -e "You cannot divide by zero. \n\nWould you like to:\n+ Add [PRESS 1]\n- Subtract [PRESS 2]\n* Multiply [PRESS 3]\n/ Divide [PRESS 4]"
+            screen
+        else
+            ans=$(( num1 / num2 ))
+        fi
     }
 
-
+    result () {
+        echo The answer is $ans.
+        echo -e "\nWould you like to:\n+ Add [PRESS 1]\n- Subtract [PRESS 2]\n* Multiply [PRESS 3]\n/ Divide [PRESS 4]\n(or exit the program [PRESS x])" 
+    }
 
     if [ $input == "1" ]
     then
-        result () {
-            echo The answer is $output1.
-        }
+        add
         result
         screen
     elif [ $input == "2" ]
     then
         subtract
+        result
         screen
     elif [ $input == "3" ]
     then
         multiply
+        result
         screen
     elif [ $input == "4" ]
     then
         divide
+        result
         screen
     fi
 
@@ -65,7 +75,3 @@ fi
 }
 
 screen
-
-
-
-
