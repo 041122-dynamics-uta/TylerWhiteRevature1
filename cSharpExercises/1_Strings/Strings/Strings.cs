@@ -6,11 +6,47 @@ namespace StringManipulationChallenge
     {
         static void Main(string[] args)
         {
-            /*
-            *
-            * implement the required code here and within the methods below.
-            *
-            */
+            Console.WriteLine("Input some text:");
+            string usersString = Console.ReadLine();
+            Console.WriteLine($"Your string converted to upper case: \n{StringToUpper(usersString)}");
+            Console.WriteLine($"Your string converted to lower case: \n{StringToLower(usersString)}");
+            Console.WriteLine($"Your string without leading and trailing white-spaces: \n{StringTrim(usersString)}");
+            
+            #region substring
+            Console.WriteLine("Time for a substring, enter the first element:");
+            if (int.TryParse(Console.ReadLine(), out int firstElement)){
+                Console.WriteLine("That's not an integer.");
+            }
+
+            Console.WriteLine("What is the length of the substring?");
+            if (int.TryParse(Console.ReadLine(), out int lengthOfSubstring)){
+                Console.WriteLine("That's not an integer.");
+            }
+
+            string returnedSubstring = StringSubString(usersString, firstElement, lengthOfSubstring);
+            Console.WriteLine($"Your substring is: \n{returnedSubstring}");
+            #endregion
+
+            #region char_find
+            Console.WriteLine("Enter a character to find the first occurrence of it in your string:");
+            if (char.TryParse(Console.ReadLine(), out char usersChar)){
+                Console.WriteLine("That's not a single character.");
+            }
+
+            int returnedCharacter = SearchChar(usersString, usersChar);
+            Console.WriteLine($"The index of the character in the string is \n{returnedCharacter}");
+            #endregion
+
+            #region concat
+            Console.WriteLine("What is your first name:");
+            string firstName = Console.ReadLine();
+            
+            Console.WriteLine("What is your last name?");
+            string lastName = Console.ReadLine();
+
+            //colon- Parameter your setting:the value of that parameter - source/destination
+            Console.WriteLine($"{ConcatNames(fName:firstName, lName:lastName)}");
+            #endregion
         }
 
         /// <summary>
@@ -22,7 +58,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static string StringToUpper(string usersString)
         {
-            throw new NotImplementedException("StringToUpper method not implemented.");
+            return usersString.ToUpper();
         }
 
         /// <summary>
@@ -34,7 +70,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>       
         public static string StringToLower(string usersString)
         {
-            throw new NotImplementedException("StringToUpper method not implemented.");
+            return usersString.ToLower();
         }
 
         /// <summary>
@@ -43,11 +79,11 @@ namespace StringManipulationChallenge
         /// 2) return the new string.
         /// HINT: When getting input from the user (you are the user), try inputting "   a string with whitespace   " to see how the whitespace is trimmed.
         /// </summary>
-        /// <param name="usersStringWithWhiteSpace"></param>
+        /// <param name="usersString"></param>
         /// <returns></returns>
-        public static string StringTrim(string usersStringWithWhiteSpace)
+        public static string StringTrim(string usersString)
         {
-            throw new NotImplementedException("StringTrim method not implemented.");
+            return usersString.Trim();
         }
 
         /// <summary>
@@ -56,13 +92,13 @@ namespace StringManipulationChallenge
         /// of the substring desired.
         /// 2) return the substring.
         /// </summary>
-        /// <param name="x"></param>
+        /// <param name="usersString"></param>
         /// <param name="firstElement"></param>
         /// <param name="lastElement"></param>
         /// <returns></returns>
-        public static string StringSubstring(string x, int firstElement, int lengthOfSubsring)
+        public static string StringSubString(string usersString, int firstElement, int lengthOfSubstring)
         {
-            throw new NotImplementedException("StringSubstring method not implemented.");
+            return usersString.Substring(firstElement, lengthOfSubstring);
         }
 
         /// <summary>
@@ -75,9 +111,9 @@ namespace StringManipulationChallenge
         /// <param name="userInputString"></param>
         /// <param name="charUserWants"></param>
         /// <returns></returns>
-        public static int SearchChar(string userInputString, char charUserWants)
+        public static int SearchChar(string usersString, char charUserWants)
         {
-            throw new NotImplementedException("SearchChar method not implemented.");
+            return usersString.IndexOf(charUserWants);
         }
 
         /// <summary>
@@ -92,7 +128,7 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static string ConcatNames(string fName, string lName)
         {
-            throw new NotImplementedException("ConcatNames method not implemented.");
+            return String.Concat(fName, " ", lName);
         }
     }//end of program
 }
