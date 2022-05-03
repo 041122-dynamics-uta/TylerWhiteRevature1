@@ -19,7 +19,13 @@ namespace _11_ArraysAndListsChallenge
         /// <returns></returns>
         public static double AverageOfValues(int[] array)
         {
-            throw new NotImplementedException("AverageOfValues has not been implemented yet.");
+            int valueTotal = 0;
+			foreach (var integer in array)
+			{
+				valueTotal += integer;
+			}
+            double average = valueTotal / array.Length;
+			return average;
         }
 
         /// <summary>
@@ -30,7 +36,11 @@ namespace _11_ArraysAndListsChallenge
         /// <returns></returns>
         public static int[] SunIsShining(int[] x)
         {
-            throw new NotImplementedException("SunIsShining has not been implemented yet.");
+            for(int i = 0; i<x.Length; i++)
+            {
+                x[i] += 2;  
+            }
+            return x[];
         }
 
         /// <summary>

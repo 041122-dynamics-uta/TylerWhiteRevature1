@@ -48,13 +48,13 @@ namespace StringManipulationChallenge.Tests
         }
 
         [Fact]
-        public void StringSubstringReturnsCorrectSubstring()
+        public void StringSubStringReturnsCorrectSubstring()
         {
             //Arrange
             string s1 = "This is a test";
 
             //Act
-            string result = Program.StringSubstring(s1, 5, 8);
+            string result = Program.StringSubString(s1, 5, 8);
 
             //Assert
             Assert.Equal("is a tes", result);
