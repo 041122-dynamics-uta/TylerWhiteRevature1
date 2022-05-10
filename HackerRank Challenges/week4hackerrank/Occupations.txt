@@ -1,0 +1,32 @@
+WITH 
+-- Add a within group index to be used for the pivot
+group_indexed as (
+SELECT
+    *,
+    ROW_NUMBER() OVER (PARTITION BY OCCUPATION ORDER BY NAME) AS group_index
+FROM
+    OCCUPATIONS
+)
+
+-- Pivot using MAX(CASE) pattern
+SELECT
+    MAX(CASE
+            WHEN OCCUPATION = 'Doctor' then NAME ELSE NULL
+        END
+    ),
+    MAX(CASE
+            WHEN OCCUPATION = 'Professor' then NAME ELSE NULL
+        END
+    ),
+    MAX(CASE
+            WHEN OCCUPATION = 'Singer' then NAME ELSE NULL
+        END
+    ),
+    MAX(CASE
+            WHEN OCCUPATION = 'Actor' then NAME ELSE NULL
+        END
+     )
+FROM
+    group_indexed
+GROUP BY
+    group_index
