@@ -1,0 +1,8 @@
+SELECT CASE
+    WHEN grade < 8 THEN NULL
+    WHEN grade >= 8 THEN name
+END, grade, marks
+FROM students
+JOIN grades
+WHERE marks BETWEEN min_mark AND max_mark
+ORDER BY grade DESC, name;
