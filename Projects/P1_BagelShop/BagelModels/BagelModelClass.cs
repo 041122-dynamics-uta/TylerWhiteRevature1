@@ -1,5 +1,5 @@
 ﻿namespace BagelModels;
-public class Class1
+public class BagelModelClass
 {
 
 }
