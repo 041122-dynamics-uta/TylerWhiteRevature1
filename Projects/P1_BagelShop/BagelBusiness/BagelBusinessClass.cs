@@ -1,5 +1,5 @@
 ﻿namespace BagelBusiness;
-public class Class1
+public class BagelBusinessClass
 {
 
 }

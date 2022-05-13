@@ -21,4 +21,11 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BagelBusiness\BagelBusiness.csproj" />
+    <ProjectReference Include="..\BagelModels\BagelModels.csproj" />
+    <ProjectReference Include="..\BagelRepository\BagelRepository.csproj" />
+    <ProjectReference Include="..\BagelShopMain\P1_BagelShop.csproj" />
+  </ItemGroup>
+
 </Project>
