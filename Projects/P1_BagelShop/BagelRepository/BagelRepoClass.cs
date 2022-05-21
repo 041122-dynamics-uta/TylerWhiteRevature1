@@ -93,7 +93,7 @@ public class BagelRepoClass
         }
     }
 
-    //Returns all products
+    //Returns all products (not needed)
     public List<BagelProducts> ProductList()
     {
         string ProdQuery1 = "SELECT * FROM BagelShop.Products;";
