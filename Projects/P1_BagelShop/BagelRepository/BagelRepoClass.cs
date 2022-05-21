@@ -16,7 +16,7 @@ public class BagelRepoClass
         string custQuery;
         if (!string.IsNullOrEmpty(customerUsername) && !string.IsNullOrEmpty(customerPass))
         {
-            //This is for logging in
+            //This is for logging in, checking to verify username and password do not already exist
             custQuery = $"SELECT * FROM BagelShop.Customers WHERE CustomerUsername={customerUsername} AND CustomerPassword={customerPass};";
         }
         else{
