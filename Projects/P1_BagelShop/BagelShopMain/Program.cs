@@ -45,13 +45,13 @@ namespace P1_BagelShop
                         break;
                     case "2": //New User registration
                         Console.WriteLine("Please enter your first name:");
-                        string custFName = Console.ReadLine();
+                        string custFName = Console.ReadLine().Trim();
                         Console.WriteLine("Please enter your last name:");
-                        string custLName = Console.ReadLine();
+                        string custLName = Console.ReadLine().Trim();
                         Console.WriteLine("Please enter a Username:");
-                        string custUsername = Console.ReadLine();
+                        string custUsername = Console.ReadLine().Trim();
                         Console.WriteLine("Please enter a Password:");
-                        string custPass = Console.ReadLine();
+                        string custPass = Console.ReadLine().Trim();
                         loggedInCustomer = logic.CustomerRegister(custFName, custLName, custUsername, custPass);
                         if (loggedInCustomer == null)
                         {
@@ -77,7 +77,7 @@ namespace P1_BagelShop
             {
                 Console.WriteLine("Which store would you like to shop at?");
                 GetAllStores();
-                string storeSelection = Console.ReadLine();
+                string storeSelection = Console.ReadLine().Trim();
                 switch (storeSelection)
                 {
                     case "1":
