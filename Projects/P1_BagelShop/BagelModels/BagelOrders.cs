@@ -2,13 +2,27 @@ namespace BagelModels
 {
     public class BagelOrders
     {
-        public Guid OrderID { get; set; } = new Guid();
-        public string StoreName { get; set; }
-        public string StoreLocation { get; set; }
-        public string ProductName { get; set; } 
-        public decimal ProductPrice { get; set; }
-        public int ProductQuantity { get; set; }
-        public decimal ProductTotalCost { get; set; }
-        public decimal TotalOrderSum { get; set; } = 0;
+        Guid _orderId;
+        public BagelOrders()
+        {
+            this._orderId = Guid.NewGuid();
+        }
+
+        public Guid OrderID { get {return _orderId;} }
+        public BagelStores? Store { get; set; }
+        public BagelCustomers? Customer { get; set; }
+        private decimal _totalOrderSum = 0;
+        public decimal TotalOrderSum { get {return _totalOrderSum;} }
+        private Dictionary<BagelProducts, int> _bagelProducts  = new Dictionary<BagelProducts,int>();
+        public void AddBagelProduct(BagelProducts product, int quantity)
+        {
+            _bagelProducts.Add(product, quantity);
+            _totalOrderSum += product.ProductPrice * quantity;
+        }
+        
+        public Dictionary<BagelProducts, int> GetBagelProducts()
+        {
+            return _bagelProducts;
+        }
     }
 }

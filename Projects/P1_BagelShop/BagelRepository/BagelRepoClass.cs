@@ -1,5 +1,6 @@
 ﻿using BagelModels;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace BagelRepository;
 public class BagelRepoClass
@@ -14,18 +15,18 @@ public class BagelRepoClass
     public List<BagelCustomers> CustomerList(string customerUsername = null, string customerPass = null) //the "= null" sets the default values so these parameters are made optional. If this is the case, the parameterized SELECT statement below never runs
     {
         string custQuery;
+        //The if statement checks that the customer does not exist yet in the dB
+        //The condition also checks that the user doesn't enter null values for their first and last name (when registering)
         if (!string.IsNullOrEmpty(customerUsername) && !string.IsNullOrEmpty(customerPass))
         {
             //This is for logging in, checking to verify username and password do not already exist
-            custQuery = $"SELECT * FROM BagelShop.Customers WHERE CustomerUsername={customerUsername} AND CustomerPassword={customerPass};";
+            custQuery = $"SELECT * FROM BagelShop.Customers WHERE CustomerUsername='{customerUsername}' AND CustomerPassword='{customerPass}';";
         }
         else{
             custQuery = "SELECT * FROM BagelShop.Customers;";
         }
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
-            //The if statement checks that the customer does not exist yet in the dB
-            //The condition also checks that the user doesn't enter null values for their first and last name (when registering)
             SqlCommand command = new SqlCommand(custQuery, connection);
             command.Connection.Open();
             SqlDataReader results = command.ExecuteReader();
@@ -93,7 +94,7 @@ public class BagelRepoClass
         }
     }
 
-    //Returns all products
+    //Returns all products, not needed
     public List<BagelProducts> ProductList()
     {
         string ProdQuery1 = "SELECT * FROM BagelShop.Products;";
@@ -130,7 +131,7 @@ public class BagelRepoClass
         +" ON [BagelShop].[Products].ProductID = [BagelShop].[Inventory].ProductID"
         +" INNER JOIN [BagelShop].[Stores]"
         +" ON [BagelShop].[Stores].StoreID = [BagelShop].[Inventory].StoreID"
-        +$" WHERE [BagelShop].[Inventory].StoreID = {storeID};";
+        +$" WHERE [BagelShop].[Inventory].StoreID = {storeID} ORDER BY StoreID, ProductID;";
 
         using (SqlConnection query = new SqlConnection(connectionString))
         {
@@ -149,7 +150,7 @@ public class BagelRepoClass
         }
     }
 
-    public List<BagelOrders> ViewPastOrders(BagelCustomers loggedInCustomer) 
+    public List<BagelOrderView> ViewPastOrders(BagelCustomers loggedInCustomer) 
     {
         string orderQuery = $"SELECT "
 +"		o.OrderId as [OrderID],"
@@ -159,7 +160,7 @@ public class BagelRepoClass
 +"		p.ProductPrice as [ProductPrice],"
 +"		o.ProductTotalCost as [ProductTotalCost],"
 +"		o.ProductQuantity as [ProductQuantity],"
-+"		0 [TotalOrderSum]"
++"		Cast(0.0 as decimal) [TotalOrderSum]"
 +"	FROM [BagelShop].[Orders] as [o]"
 +"		inner join [BagelShop].[Products] as [p]"
 +"			on p.ProductId = o.ProductId"
@@ -167,7 +168,7 @@ public class BagelRepoClass
 +"			on s.StoreId = o.StoreId"
 +"		inner join [BagelShop].[Customers] as [c]"
 +"			on c.CustomerId = o.CustomerId"
-+$"	WHERE [c].CustomerID = {loggedInCustomer};";
++$"	WHERE [c].CustomerID = {loggedInCustomer.CustomerID};";
 
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
@@ -175,7 +176,7 @@ public class BagelRepoClass
             command.Connection.Open();
             SqlDataReader results = command.ExecuteReader();
 
-            List<BagelOrders> pastOrders = new List<BagelOrders>();
+            List<BagelOrderView> pastOrders = new List<BagelOrderView>();
             while (results.Read())
             {
                 pastOrders.Add(this.oMap.DboToMember(results));
@@ -189,16 +190,65 @@ public class BagelRepoClass
     //This is a method to create a new order
     public void CreateOrder(BagelOrders orders)
     {
-        string ProdQuery1 = $"INSERT INTO BagelShop.ProductOrders (ProductID, OrderID, ProductQuantity) VALUES(2, 102, 2);";
-        string ProdQuery2 = $"INSERT INTO BagelShop.Orders (StoreID, CustomerID, ProductTotalCost, DateCreated) VALUES(5, 1, 10, GetDate());";
+        string newOrder = "INSERT INTO BagelShop.Orders (OrderID, StoreID, ProductID, CustomerID, ProductQuantity, ProductTotalCost) VALUES (@oID, @sID, @pID, @cID, @pQuantity, @pTotalCost);";
 
-        using (SqlConnection query = new SqlConnection(connectionString))
+        using (SqlConnection connection = new SqlConnection(connectionString))
         {
-            SqlCommand command = new SqlCommand(ProdQuery1, query);
-            command.Connection.Open();
-            int results = command.ExecuteNonQuery();
-            
-            query.Close();
+            connection.Open();
+            foreach(var products in orders.GetBagelProducts())
+            {
+                SqlCommand command = new SqlCommand(newOrder, connection);
+                command.Parameters.AddWithValue("@oID", orders.OrderID);
+                command.Parameters.AddWithValue("@sID", orders.Store.StoreID);
+                command.Parameters.AddWithValue("cID", orders.Customer.CustomerID);
+                command.Parameters.AddWithValue("@pQuantity", products.Value);
+                command.Parameters.AddWithValue("@pID", products.Key.ProductID);
+                command.Parameters.AddWithValue("@pTotalCost", orders.TotalOrderSum);
+                int results = command.ExecuteNonQuery();
+            }
+                connection.Close();
+        }
+    }
+
+    public void UpdateInventory(BagelOrders orders)
+    {
+        using (SqlConnection connection = new SqlConnection(connectionString))
+        {
+            connection.Open();
+            foreach(var product in orders.GetBagelProducts())
+            {
+                // Create the command and set its properties.
+                SqlCommand command = new SqlCommand();
+                command.Connection = connection;
+                command.CommandText = "BagelShop.UpdateInventory";
+                command.CommandType = CommandType.StoredProcedure;
+
+                // Add the input parameters and set its properties.
+                SqlParameter parameter1 = new SqlParameter();
+                parameter1.ParameterName = "@StoreID";
+                parameter1.SqlDbType = SqlDbType.Int;
+                parameter1.Direction = ParameterDirection.Input;
+                parameter1.Value = orders.Store.StoreID;
+                command.Parameters.Add(parameter1);
+
+                SqlParameter parameter2 = new SqlParameter();
+                parameter2.ParameterName = "@ProductID";
+                parameter2.SqlDbType = SqlDbType.Int;
+                parameter2.Direction = ParameterDirection.Input;
+                parameter2.Value = product.Key.ProductID;
+                command.Parameters.Add(parameter2);
+
+                SqlParameter parameter3 = new SqlParameter();
+                parameter3.ParameterName = "@QuantityUpdate";
+                parameter3.SqlDbType = SqlDbType.SmallInt;
+                parameter3.Direction = ParameterDirection.Input;
+                parameter3.Value = product.Value;
+                command.Parameters.Add(parameter3);
+
+                command.ExecuteNonQuery();
+            }
+
+            connection.Close();
         }
     }
 }

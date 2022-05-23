@@ -3,23 +3,20 @@ using BagelBusiness;
 using BagelModels;
 using BagelRepository;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace P1_BagelShop
 {
     public class Program
     {
-        static BusinessLogic logic = new BusinessLogic();
+        //make the instances of other classes "private" because only this class needs to use these objects
+        private static BusinessLogic _logic = new BusinessLogic();
 
         public static void Main(string[] args)
         {
-            int storeID = 0; 
-            //int customerID = 1;
-            int productID = 2;
-            int productQuantity = 3;
-            BagelCustomers newCustomer = new BagelCustomers();
-            BagelCustomers loggedInCustomer;
-
-            Console.WriteLine("Welcome to the Big Boi Bagel Shop!");
+            Console.WriteLine("**************************************");
+            Console.WriteLine("* Welcome to the Big Boi Bagel Shop! *");
+            Console.WriteLine("**************************************\n");
 
             //First we will either log-in or register a new user
             bool moveOn = false;
@@ -32,14 +29,17 @@ namespace P1_BagelShop
                     case "1": //Logging in to their account
                         Console.WriteLine("Username:");
                         string customerUsername = Console.ReadLine().Trim(); //.Trim() gets rid of white spaces
+
                         Console.WriteLine("Password:");
                         string customerPassword = Console.ReadLine().Trim();
-                        loggedInCustomer = logic.CustomerLogin(customerUsername, customerPassword);
-                        if (loggedInCustomer == null)
+                        
+                        //if statement to check if the customer entered a username/password that is valid or not
+                        _logic.CustomerLogin(customerUsername, customerPassword);
+                        if (_logic.LoggedInCustomer == null)
                         {
                             Console.WriteLine("That was not a valid Username and Password.");
                         } else{
-                            Console.WriteLine($"Welcome back {loggedInCustomer.CustomerFName} {loggedInCustomer.CustomerLName}!");
+                            Console.WriteLine($"Welcome back {_logic.LoggedInCustomer.CustomerFName} {_logic.LoggedInCustomer.CustomerLName}!\n");
                             moveOn = true;
                         }
                         break;
@@ -52,69 +52,51 @@ namespace P1_BagelShop
                         string custUsername = Console.ReadLine().Trim();
                         Console.WriteLine("Please enter a Password:");
                         string custPass = Console.ReadLine().Trim();
-                        loggedInCustomer = logic.CustomerRegister(custFName, custLName, custUsername, custPass);
-                        if (loggedInCustomer == null)
+                        _logic.CustomerRegister(custFName, custLName, custUsername, custPass);
+
+                        //if statement to check if the customer already exists or not
+                        if (_logic.LoggedInCustomer == null)
                         {
                             Console.WriteLine("That customer already exists in the system.");
                         } else{
-                            Console.WriteLine($"Thank you for registering {loggedInCustomer.CustomerFName} {loggedInCustomer.CustomerLName}.");
+                            Console.WriteLine($"Thank you for registering {_logic.LoggedInCustomer.CustomerFName} {_logic.LoggedInCustomer.CustomerLName}.\n");
                             moveOn = true;
                         }
                         break;
+                    case "3":
+                        Quit();
+                        break;
                     default:
-                        Console.WriteLine("That wasn't a valid option. Please try again.");
+                        Console.WriteLine("That wasn't a valid option. Please try again.\n");
                         break;
                 }
             }
             
             //Choose to create a new order or view a past order
-            Console.WriteLine("Would you like to:\n[ENTER 1] Create a new order\n[Enter 2] View your past orders");
-
-            //If they choose to create a new order, then....
-            //Choosing which store they want to shop at
             moveOn = false;
             while (moveOn == false)
             {
-                Console.WriteLine("Which store would you like to shop at?");
-                GetAllStores();
-                string storeSelection = Console.ReadLine().Trim();
-                switch (storeSelection)
+                
+                Console.WriteLine("Would you like to:\n[ENTER 1] Create a new order\n[Enter 2] View your past orders");
+
+                string newOrPastOrder = Console.ReadLine().Trim();
+                switch (newOrPastOrder)
                 {
                     case "1":
-                        storeID = 5;
+                        AskCustomerToPlaceOrder();
                         moveOn = true;
                         break;
                     case "2":
-                        storeID = 10;
-                        moveOn = true;
-                        break;
-                    case "3":
-                        storeID = 15;
-                        moveOn = true;
-                        break;
-                    case "4":
-                        storeID = 20;
+                        GetPastOrders(_logic.LoggedInCustomer);
                         moveOn = true;
                         break;
                     default:
-                        Console.WriteLine("That wasn't a valid option. Please try again.");
+                        Console.WriteLine("That wasn't a valid option. Please try again.\n");
                         break;
                 }
             }
 
-            //Viewing the products at that chosen store and selecting a product
-            Console.WriteLine("Here are the products at that store. Please select your first item to begin your order:");
-            GetProductsByStore(storeID);
-                                
-            //Add product(s) to order & their quantity
-            //Need a loop here so they can purchase more than one product...
-            logic.AddProductToOrder(productID, productQuantity);
-            //Delete a product one at a time
-                //list the products. Ask which product they want to delete
-            //Press C to checkout
 
-            //Write that order to the Db and update inventory
-            //logic.PlaceOrder(storeID, customerID);
 
             //Would you like to quit -- quit
             //log out -- log them out and loop them up to login screen
@@ -122,38 +104,179 @@ namespace P1_BagelShop
 
         }
 
-        //Retrieve store list
-        public static void GetAllStores()
+
+        private static void AskCustomerToPlaceOrder()
         {
-            var myStores = logic.GetAllStores();
-            int num = 1;
-            foreach(var store in myStores)
+            //If they choose to create a new order, then....
+            //Choosing which store they want to shop at
+            BagelStores store = StoreSelection();
+
+            //Retrieve product list by store
+            var myProducts = _logic.GetProductsByStore(store.StoreID);
+            bool shouldCheckout = AddProductsToOrder(myProducts);
+            if (shouldCheckout)
             {
-                Console.WriteLine($"[ENTER {num}] {store.StoreName}, located at: {store.StoreLocation}");
-                num++;
+                //Write that order to the Db and update inventory
+                _logic.PlaceOrder(store);
+                Console.WriteLine("Order Successfully Placed!!!");
             }
         }
 
-        //Retrieve product list
-        public static void GetAllProducts()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="products"></param>
+        /// <returns>true to checkout, false to quit</returns>
+        private static bool AddProductsToOrder(List<BagelProducts> products)
+        {
+            string expectedFormat = "productid,quantity";
+            bool moveOn = true;
+            while (moveOn)
+            {
+                //Viewing the products at that chosen store and selecting a product
+                Console.WriteLine($"Here are the products at that store. Please enter the {expectedFormat} to add an item to your order");
+                foreach(var displayProduct in products)
+                {
+                    Console.WriteLine($"ID:{displayProduct.ProductID} Name:{displayProduct.ProductName} Cost:${displayProduct.ProductPrice}");
+                }
+
+                string produtOrderInput = Console.ReadLine();
+                var input = produtOrderInput.Split(',');
+                if (input.Length != 2)
+                {
+                    Console.WriteLine($"That wasn't a valid option. Please try again. Expecting format {expectedFormat}");
+                    continue;
+                }
+                var isWorkingProduct = int.TryParse(input[0].Trim(), out int productId);
+                var isWorkingQuantity = int.TryParse(input[1].Trim(), out int quantity);
+                if(isWorkingProduct && isWorkingQuantity)
+                {
+                    bool foundProduct = false;
+                    foreach(var bagelProduct in products)
+                    {
+                        if (productId == bagelProduct.ProductID)
+                        {
+                            _logic.AddProductToOrder(bagelProduct, quantity);
+                            foundProduct  = true;
+                            break;
+                        }
+                    }
+                    if (!foundProduct)
+                    {
+                        Console.WriteLine("Invalid product input, try again");
+                        continue;
+                    }
+                    // Add product(s) to order & their quantity
+                    Console.WriteLine($"1:Buy another product?\n2:Checkout\n3:Quit");
+                    var userInput = Console.ReadLine().Trim();
+                    switch(userInput)
+                    {
+                        case "1":
+                            Console.WriteLine("Go ahead - buy another!");
+                            moveOn = true;
+                            break;
+                        case "2":
+                        Console.WriteLine("Checking out ...");
+                            return true;
+                        case "3":
+                            Console.WriteLine("Quitting");
+                            Quit();
+                            return false;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"That wasn't a valid option, please try again. Expecting format {expectedFormat}\n");                    
+                }
+            }
+            return false;
+        }
+        public static BagelStores StoreSelection()
+        {
+            bool moveOn = false;
+            var myStores = _logic.GetAllStores();
+            while (moveOn == false)
+            {
+                Console.WriteLine("Which store would you like to shop at? (Please select by store id");
+                foreach(var store in myStores)
+                {
+                    Console.WriteLine($"ID:{store.StoreID} for {store.StoreName}, located at: {store.StoreLocation}");
+                }
+                string storeSelection = Console.ReadLine().Trim();
+                bool isValidStore = int.TryParse(storeSelection, out int storeId);
+
+                foreach(var store in myStores)
+                {
+                    if (storeId == store.StoreID)
+                    {
+                        Console.WriteLine($"Thank you for choosing {store.StoreName}");
+                        return store;
+                    }
+                }
+
+                Console.WriteLine("That wasn't a valid option. Please try again.\n");
+                continue;
+            }
+            // This should never be hit
+            throw new Exception("SERIOUSLY BROKE - WHAT DID WE DO");
+        }
+
+        public static void Quit(){
+            Environment.Exit(0);
+        }
+        
+        //Past orders
+        public static void GetPastOrders(BagelCustomers loggedInCustomer)
+        {
+            List<BagelOrderView> myOrders = _logic.GetPastOrders(loggedInCustomer);
+            int num = 1;
+
+            Dictionary<Guid, List<BagelOrderView>> ordersGrouped = new Dictionary<Guid, List<BagelOrderView>>();
+            foreach(var order in myOrders)
+            {
+                if (ordersGrouped.ContainsKey(order.OrderID))
+                {
+                    ordersGrouped[order.OrderID].Add(order);
+                }
+                else
+                {
+                    List<BagelOrderView> newView = new List<BagelOrderView>();
+                    newView.Add(order);
+                    ordersGrouped.Add(order.OrderID, newView);
+                }
+            }
+
+            foreach(var orderId in ordersGrouped.Keys)
+            {
+                var currentOrder = ordersGrouped[orderId][0];
+                num = 1;
+                Console.WriteLine();
+                Console.WriteLine($"Order: {orderId}");
+                Console.WriteLine($"===========================================================");
+                Console.WriteLine($"Total order cost: ${currentOrder.TotalOrderSum}");
+                Console.WriteLine($"Order date: {currentOrder.DateCreated}");
+                Console.WriteLine($"Store: {currentOrder.StoreName}");
+                Console.WriteLine($"Store Location: {currentOrder.StoreLocation}");
+
+                foreach(var order in ordersGrouped[orderId])
+                {
+                    Console.WriteLine($"Product {num} -- {order.ProductName}");
+                    Console.WriteLine($"\tPurchased: {order.ProductQuantity} @ {order.ProductPrice}");
+                    num++;
+                }
+                Console.WriteLine($"===========================================================");
+                Console.WriteLine();
+            }
+        }
+        //Retrieve product list, not needed
+/*         public static void GetAllProducts()
         {
             var myProducts = logic.GetAllProducts();
             foreach(var product in myProducts)
             {
                 Console.WriteLine($"ID- {product.ProductID}, name- {product.ProductName}, price- ${product.ProductPrice}, description- {product.ProductDescription}" );
             }
-        }
+        } */
 
-        public static void GetProductsByStore(int storeID)
-        {
-            //Retrieve product list by store
-            var myProducts = logic.GetProductsByStore(storeID);
-            int num = 1;
-            foreach(var product in myProducts)
-            {
-                Console.WriteLine($"[ENTER {num}] {product.ProductName} at ${product.ProductPrice}");
-                num++;
-            }
-        }
     }
 }
