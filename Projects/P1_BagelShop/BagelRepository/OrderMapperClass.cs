@@ -5,18 +5,18 @@ namespace BagelRepository
 {
     public class OrderMapperClass
     {
-        public BagelOrders DboToMember(SqlDataReader reader)
+        public BagelOrderView DboToMember(SqlDataReader reader)
         {
-            BagelOrders bagelOrder = new BagelOrders
+            BagelOrderView bagelOrder = new BagelOrderView
             {
             OrderID = (Guid)reader["OrderID"],
 		    StoreName = (string)reader["StoreName"],
 		    StoreLocation = (string)reader["StoreLocation"],
             ProductName = (string)reader["ProductName"],
             ProductPrice = (decimal)reader["ProductPrice"],
-            ProductTotalCost = (decimal)reader["ProductTotalCost"],
             ProductQuantity = (int)reader["ProductQuantity"],
-            TotalOrderSum = (decimal)reader["TotalOrderSum"]
+            TotalOrderSum = (decimal)reader["ProductTotalCost"],
+            DateCreated = DateTime.Now //DateTime.Parse(reader["DateCreated"].ToString())
             };
             return bagelOrder;
         }

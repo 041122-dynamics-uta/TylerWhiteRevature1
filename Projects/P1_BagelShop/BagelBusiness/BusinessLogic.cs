@@ -7,28 +7,40 @@ namespace BagelBusiness
     {
         //Creates a new repo object only for this class
         private BagelRepoClass _repo = new BagelRepoClass();
-        //Creates a new order (object only for this class)
+        //Order object only for this class
         private BagelOrders _order = new BagelOrders();
-        
+        //Logged in Customer object only for this 
+
+        private BagelCustomers _loggedInCustomer = new BagelCustomers();
+        public BagelCustomers LoggedInCustomer
+        {
+            get
+            {
+                return _loggedInCustomer;
+            }
+        }
+       
         //Get first time customer's registration (NEED TO CHECK IF THAT REGISTRATION IS ALREADY IN THE DB)
         public BagelCustomers CustomerRegister(string custFName, string custLName, string custUsername, string custPass){
-            BagelCustomers c = _repo.NewCustomer(custFName, custLName, custUsername, custPass);
-            return c;
+            BagelCustomers customer = _repo.NewCustomer(custFName, custLName, custUsername, custPass);
+            _loggedInCustomer = customer;
+            return _loggedInCustomer;
         }
 
         //Customer login
         public BagelCustomers CustomerLogin(string custUsername, string custPass){
-            List<BagelCustomers> c = _repo.CustomerList(custUsername, custPass);
-            if (c.Count == 1)
+            List<BagelCustomers> customer = _repo.CustomerList(custUsername, custPass);
+            if (customer.Count == 1)
             {
-               return c.First();
+                _loggedInCustomer = customer.First(); //need .First() because customer is a list and we only need one
+                return _loggedInCustomer;
             }
             return null;
         }
 
         //Allows customer to view their past purchases from a store
-        public List<BagelOrders> GetPastOrders(BagelCustomers loggedInCustomer){
-            List<BagelOrders> pastOrders = _repo.ViewPastOrders(loggedInCustomer);
+        public List<BagelOrderView> GetPastOrders(BagelCustomers loggedInCustomer){
+            List<BagelOrderView> pastOrders = _repo.ViewPastOrders(loggedInCustomer);
             return pastOrders;
         }
 
@@ -54,52 +66,47 @@ namespace BagelBusiness
 
         //This method adds productID and quantity to your pending order
         //"Products" is a Dictionary with the key = productID and the value = productQuantity
-        public void AddProductToOrder(int productID, int productQuantity)
+        public void AddProductToOrder(BagelProducts product, int productQuantity)
         {
-            //_order.Products.Add(productID, productQuantity);
+            _order.AddBagelProduct(product, productQuantity);
         }
 
         //PlaceOrder takes in storeID and customerID and adds that to the pending order
-        //Then we add the total cost of all products/quantities to the pending order
         //Then we add the order to the Db
-        public void PlaceOrder(int storeID, int customerID)
+        public void PlaceOrder(BagelStores store)
         {
-/*             _order.StoreID = storeID;
-            _order.CustomerID = customerID;
-            _order.DateCreated = DateTime.Now;
-        
-            _order.ProductTotalCost = GetTotalCostofOrder(storeID);
+            _order.Store = store;
+            _order.Customer = _loggedInCustomer;
             _repo.CreateOrder(_order);
-            //TODO Remove order products from inventory
- */
+            _repo.UpdateInventory(_order);
         }
 
-        //This method returns the total order cost
-        //Private access modifier as only this class needs to see it
-        private decimal GetTotalCostofOrder(int storeID)
-        {
-           decimal currentTotalCost = 0;
- /*           //Fetches all products from a specific store (by ID)
-            List<BagelProducts> allProducts = GetProductsByStore(storeID);
+//         //This method returns the total order cost
+//         //Private access modifier as only this class needs to see it
+//         private decimal GetTotalCostofOrder(int storeID)
+//         {
+//            decimal currentTotalCost = 0;
+//  /*           //Fetches all products from a specific store (by ID)
+//             List<BagelProducts> allProducts = GetProductsByStore(storeID);
             
-            //Iterating over the products in the pending order.
-            foreach(var productInOrder in _order.Products)
-            {
-                //quantityPerProduct is the product count of one product in the pending order (Value is quantity)
-                int quantityPerProduct = productInOrder.Value;
+//             //Iterating over the products in the pending order.
+//             foreach(var productInOrder in _order.Products)
+//             {
+//                 //quantityPerProduct is the product count of one product in the pending order (Value is quantity)
+//                 int quantityPerProduct = productInOrder.Value;
 
-                //Iterating over all the products from the chosen specific store
-                foreach(BagelProducts inventoriedProduct in allProducts)
-                {
-                    //If the Product PK in the pending order lines up with a corresponding product pk at that store
-                    if (inventoriedProduct.ProductID == productInOrder.Key)
-                    {
-                       currentTotalCost += inventoriedProduct.ProductPrice + quantityPerProduct;
-                    }
-                }
-            }*/
-            return currentTotalCost; 
-        }
+//                 //Iterating over all the products from the chosen specific store
+//                 foreach(BagelProducts inventoriedProduct in allProducts)
+//                 {
+//                     //If the Product PK in the pending order lines up with a corresponding product pk at that store
+//                     if (inventoriedProduct.ProductID == productInOrder.Key)
+//                     {
+//                        currentTotalCost += inventoriedProduct.ProductPrice + quantityPerProduct;
+//                     }
+//                 }
+//             }*/
+//             return currentTotalCost; 
+//         }
         
     }
 }

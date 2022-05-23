@@ -89,19 +89,48 @@ INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 3, 40);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 4, 40);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 5, 40);
-INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 6, 38);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 6, 40);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 7, 40);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 8, 40);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 9, 40);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 10, 40);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 11, 40);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 12, 40);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 13, 30);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 14, 30);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 15, 30);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(5, 16, 30);
 
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 1, 50);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 2, 50);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 3, 55);
-INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 3, 55);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 8, 55);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 9, 55);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 10, 50);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 11, 50);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 12, 30);
 INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(10, 13, 30);
+
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 1, 35);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 2, 35);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 3, 35);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 6, 35);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 9, 35);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 11, 35);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 13, 35);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 14, 35);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(15, 16, 35);
+
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 1, 15);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 2, 15);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 3, 15);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 4, 15);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 5, 15);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 6, 20);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 14, 10);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 15, 10);
+INSERT INTO BagelShop.Inventory (StoreID, ProductID, InventoryQuantity) VALUES(20, 16, 10);
+
 
 insert into [BagelShop].[Orders]
 (OrderID, StoreID, ProductID, CustomerID, ProductQuantity, ProductTotalCost, DateCreated)
