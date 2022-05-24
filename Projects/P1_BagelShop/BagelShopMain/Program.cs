@@ -14,7 +14,7 @@ namespace P1_BagelShop
 
         public static void Main(string[] args)
         {
-            Console.WriteLine("**************************************");
+            Console.WriteLine("\n\n**************************************");
             Console.WriteLine("* Welcome to the Big Boi Bagel Shop! *");
             Console.WriteLine("**************************************\n");
 
@@ -22,7 +22,7 @@ namespace P1_BagelShop
             bool moveOn = false;
             while (moveOn == false)
             {
-                Console.WriteLine("[ENTER 1] Log-in to your Big Boi account\n[ENTER 2] Register as a new customer");
+                Console.WriteLine("[ENTER 1] Log-in to your Big Boi account\n[ENTER 2] Register as a new customer\n[Enter 3] Quit");
                 string loginOrRegister = Console.ReadLine();
                 switch (loginOrRegister)
                 {
@@ -95,15 +95,7 @@ namespace P1_BagelShop
                         break;
                 }
             }
-
-
-
-            //Would you like to quit -- quit
-            //log out -- log them out and loop them up to login screen
-            //or choose another store
-
         }
-
 
         private static void AskCustomerToPlaceOrder()
         {
@@ -118,33 +110,67 @@ namespace P1_BagelShop
             {
                 //Write that order to the Db and update inventory
                 _logic.PlaceOrder(store);
-                Console.WriteLine("Order Successfully Placed!!!");
+                Console.WriteLine("Order Successfully Placed!!");
+                Console.WriteLine("Thank you, please visit us again soon.");
             }
         }
 
+        public static BagelStores StoreSelection()
+        {
+            bool moveOn = false;
+            var myStores = _logic.GetAllStores();
+            while (moveOn == false)
+            {
+                Console.WriteLine("Which store would you like to shop at? (Please enter the store number)");
+                foreach(var store in myStores)
+                {
+                    Console.WriteLine($"\nStore #{store.StoreID} -- {store.StoreName}\nLocated at: {store.StoreLocation}");
+                }
+                string storeSelection = Console.ReadLine().Trim();
+                bool isValidStore = int.TryParse(storeSelection, out int storeId);
+
+                foreach(var store in myStores)
+                {
+                    if (storeId == store.StoreID)
+                    {
+                        Console.WriteLine($"\n**Thank you for choosing the {store.StoreName}**");
+                        return store;
+                    }
+                }
+
+                Console.WriteLine("That wasn't a valid option. Please try again.\n");
+                continue;
+            }
+            // This should never be hit
+            throw new Exception("SERIOUSLY BROKE - WHAT DID WE DO");
+        }
+
         /// <summary>
-        /// 
+        /// Selecting a product and add to order
         /// </summary>
         /// <param name="products"></param>
         /// <returns>true to checkout, false to quit</returns>
         private static bool AddProductsToOrder(List<BagelProducts> products)
         {
-            string expectedFormat = "productid,quantity";
+            string expectedFormat = "'Product Number','Quantity'";
             bool moveOn = true;
             while (moveOn)
             {
                 //Viewing the products at that chosen store and selecting a product
-                Console.WriteLine($"Here are the products at that store. Please enter the {expectedFormat} to add an item to your order");
+                Console.WriteLine("Available products below, select a product and quantity to add it to your cart.");
+                Console.WriteLine($"Use the format: {expectedFormat} to add an item to your order.\n");
                 foreach(var displayProduct in products)
                 {
-                    Console.WriteLine($"ID:{displayProduct.ProductID} Name:{displayProduct.ProductName} Cost:${displayProduct.ProductPrice}");
+                    Console.WriteLine($"Product #{displayProduct.ProductID}-- Name: {displayProduct.ProductName} - Cost: ${displayProduct.ProductPrice}");
+                    Console.WriteLine($"Description: {displayProduct.ProductDescription}\n");
                 }
 
-                string produtOrderInput = Console.ReadLine();
+                //Evaluating input
+                string produtOrderInput = Console.ReadLine().Trim();
                 var input = produtOrderInput.Split(',');
                 if (input.Length != 2)
                 {
-                    Console.WriteLine($"That wasn't a valid option. Please try again. Expecting format {expectedFormat}");
+                    Console.WriteLine($"That wasn't a valid option. Please try again. Expecting format {expectedFormat}\n");
                     continue;
                 }
                 var isWorkingProduct = int.TryParse(input[0].Trim(), out int productId);
@@ -163,11 +189,11 @@ namespace P1_BagelShop
                     }
                     if (!foundProduct)
                     {
-                        Console.WriteLine("Invalid product input, try again");
+                        Console.WriteLine("Invalid product input, try again\n");
                         continue;
                     }
                     // Add product(s) to order & their quantity
-                    Console.WriteLine($"1:Buy another product?\n2:Checkout\n3:Quit");
+                    Console.WriteLine($"[ENTER 1] Buy another product?\n[ENTER 2] Checkout\n[ENTER 3] Quit");
                     var userInput = Console.ReadLine().Trim();
                     switch(userInput)
                     {
@@ -176,10 +202,10 @@ namespace P1_BagelShop
                             moveOn = true;
                             break;
                         case "2":
-                        Console.WriteLine("Checking out ...");
+                        Console.WriteLine("Checking out...");
                             return true;
                         case "3":
-                            Console.WriteLine("Quitting");
+                            Console.WriteLine("Order cancelled, have a nice day.");
                             Quit();
                             return false;
                     }
@@ -191,36 +217,8 @@ namespace P1_BagelShop
             }
             return false;
         }
-        public static BagelStores StoreSelection()
-        {
-            bool moveOn = false;
-            var myStores = _logic.GetAllStores();
-            while (moveOn == false)
-            {
-                Console.WriteLine("Which store would you like to shop at? (Please select by store id");
-                foreach(var store in myStores)
-                {
-                    Console.WriteLine($"ID:{store.StoreID} for {store.StoreName}, located at: {store.StoreLocation}");
-                }
-                string storeSelection = Console.ReadLine().Trim();
-                bool isValidStore = int.TryParse(storeSelection, out int storeId);
 
-                foreach(var store in myStores)
-                {
-                    if (storeId == store.StoreID)
-                    {
-                        Console.WriteLine($"Thank you for choosing {store.StoreName}");
-                        return store;
-                    }
-                }
-
-                Console.WriteLine("That wasn't a valid option. Please try again.\n");
-                continue;
-            }
-            // This should never be hit
-            throw new Exception("SERIOUSLY BROKE - WHAT DID WE DO");
-        }
-
+        //Simple method to quit
         public static void Quit(){
             Environment.Exit(0);
         }
@@ -245,7 +243,7 @@ namespace P1_BagelShop
                     ordersGrouped.Add(order.OrderID, newView);
                 }
             }
-
+            //formatting and displaying a past order
             foreach(var orderId in ordersGrouped.Keys)
             {
                 var currentOrder = ordersGrouped[orderId][0];

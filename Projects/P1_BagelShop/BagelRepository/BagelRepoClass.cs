@@ -150,6 +150,7 @@ public class BagelRepoClass
         }
     }
 
+    //View past orders for a specific customer
     public List<BagelOrderView> ViewPastOrders(BagelCustomers loggedInCustomer) 
     {
         string orderQuery = $"SELECT "
@@ -210,6 +211,7 @@ public class BagelRepoClass
         }
     }
 
+    //This method updates the inventory for a specific store after an order successfully goes through
     public void UpdateInventory(BagelOrders orders)
     {
         using (SqlConnection connection = new SqlConnection(connectionString))

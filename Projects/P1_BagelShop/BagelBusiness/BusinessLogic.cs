@@ -20,7 +20,7 @@ namespace BagelBusiness
             }
         }
        
-        //Get first time customer's registration (NEED TO CHECK IF THAT REGISTRATION IS ALREADY IN THE DB)
+        //Get first time customer's registration
         public BagelCustomers CustomerRegister(string custFName, string custLName, string custUsername, string custPass){
             BagelCustomers customer = _repo.NewCustomer(custFName, custLName, custUsername, custPass);
             _loggedInCustomer = customer;
@@ -79,34 +79,6 @@ namespace BagelBusiness
             _order.Customer = _loggedInCustomer;
             _repo.CreateOrder(_order);
             _repo.UpdateInventory(_order);
-        }
-
-//         //This method returns the total order cost
-//         //Private access modifier as only this class needs to see it
-//         private decimal GetTotalCostofOrder(int storeID)
-//         {
-//            decimal currentTotalCost = 0;
-//  /*           //Fetches all products from a specific store (by ID)
-//             List<BagelProducts> allProducts = GetProductsByStore(storeID);
-            
-//             //Iterating over the products in the pending order.
-//             foreach(var productInOrder in _order.Products)
-//             {
-//                 //quantityPerProduct is the product count of one product in the pending order (Value is quantity)
-//                 int quantityPerProduct = productInOrder.Value;
-
-//                 //Iterating over all the products from the chosen specific store
-//                 foreach(BagelProducts inventoriedProduct in allProducts)
-//                 {
-//                     //If the Product PK in the pending order lines up with a corresponding product pk at that store
-//                     if (inventoriedProduct.ProductID == productInOrder.Key)
-//                     {
-//                        currentTotalCost += inventoriedProduct.ProductPrice + quantityPerProduct;
-//                     }
-//                 }
-//             }*/
-//             return currentTotalCost; 
-//         }
-        
+        }        
     }
 }
